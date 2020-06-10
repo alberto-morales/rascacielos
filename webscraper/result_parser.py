@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import pandas as pd
 
 class ResultParser:
     def __init__(self):
@@ -13,13 +14,18 @@ class ed_01(ResultParser):
         pass
 
     def parse(selfSelf, page_source):
+        res_price = []
+        res_index = []
         print(f"la longitud de la page_source es '{page_source.__len__()}'")
-        soup_level = BeautifulSoup(page_source, features='lxml')
+        soup_level = BeautifulSoup(page_source)
         #
-        resultados = soup_level.find_all('div', class_="result")
+        resultados = soup_level.find_all('div', {'class': 'result_wrapper'})
         esElPrimero = True
-        for result in resultados:
+        index = 0
+        for iteration in resultados:
+            index = index + 1
             if (esElPrimero):
+                result = iteration.contents[1]
                 price = result['data-price']
                 groups = result.find_all('div', class_="itinerary_group")  # od-primary-flight-info-cities
                 # print(f"son {len(groups)} groups")
@@ -74,6 +80,11 @@ class ed_01(ResultParser):
                     n_itinerary_group = n_itinerary_group + 1
                     # print("^^^^^^ fin-itinerary_group ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
                 print(f"   PRICE: {price}")
+                res_price.append(price)
+                res_index.append(index)
                 print("============================")
-            esElPrimero = True
-        return None
+
+            esElPrimero = False
+        res_data = {'price' : res_price}
+        df = pd.DataFrame(res_data, index = res_index)
+        return df

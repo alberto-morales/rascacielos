@@ -1,5 +1,16 @@
-The data points you can get related to flights are usually the flight names/ID, date of journey,
-departure time, arrival time, status and the price
+The data points you can get related to flights are usually:e
+
+- flight names/ID,
+- date of journey,
+
+- status and the
+* flight number
+* price
+* origin
+* destination
+* airline
+* departure time
+* arrival time
 
 - detecte el final de la carga
 - avance a las páginas posteriores a la primera
