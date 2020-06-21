@@ -1,0 +1,3 @@
+planner:
+  number_of_days: 5
+  max_days_of_stay: 9
