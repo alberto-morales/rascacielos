@@ -1,7 +1,12 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
 from time import sleep
 from kafka import KafkaProducer
 from datetime import datetime
+import os
+from pyvirtualdisplay import Display
+
 
 def date_time():
     now = datetime.now()  # current date and time
@@ -13,7 +18,19 @@ def main():
     # initializing resources
     print("Starting...")
     # code
-    driver = webdriver.Firefox()
+
+    # sudo apt-get install xvfb
+    # esto sirve si no utilizamos el --headless
+    #os.putenv('DISPLAY',':1.0')
+    #display = Display(visible=1, size=(800, 800))  
+    #display.start()    
+
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    driver = webdriver.Chrome(chrome_options=chrome_options,executable_path='/bin/chromedriver')
+
     driver.implicitly_wait(20)
     la_URL = "https://www.edreams.es/travel/#results/type=R;dep=2020-08-15;from=MAD;to=LCG;ret=2020-08-15;collectionmethod=false;airlinescodes=false;internalSearch=true"
     driver.delete_all_cookies()
