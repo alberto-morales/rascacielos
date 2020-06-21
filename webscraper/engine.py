@@ -3,6 +3,7 @@ import os
 from datetime import date, timedelta
 
 from task_creator_one_way import Planner
+from scrapper import Scrapper
 
 from pandas import DataFrame
 
@@ -30,7 +31,16 @@ class Processor():
         # and shuffles it
         df_fechas = df_fechas.sample(frac=1).reset_index(drop=True)
         print(df_fechas)
-
+        print('vamonos')
+        for index, row in df_fechas.iterrows():
+            scrapper = Scrapper()
+            #print(row['extraction_date'])
+            #print(row['flight_date'])
+            scrapper.extract(self._origin,
+                             self._destination,
+                             row['extraction_date'],
+                             row['flight_date']
+                            )
 
 if __name__ == "__main__":
     processor = Processor({'origin': 'MAD', 'destination': 'SLV'}, Planner())
