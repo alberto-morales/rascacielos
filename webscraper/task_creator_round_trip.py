@@ -18,14 +18,14 @@ class Planner():
 
 
     def create_tasks(self):
-        dates = DataFrame(columns=('start_date', 'end_date'))
+        dates = DataFrame(columns=('outbound_date', 'inbound_date'))
         today = date.today()
         outer_days_list = [today + timedelta(days=d) for d in range(1, self._NUMBER_OF_DAYS + 1)]
-        for start_date in outer_days_list:
-            inner_days_list = [start_date + timedelta(days=d) for d in range(self._MAX_DAYS_OF_STAY + 1)]
-            for end_date in inner_days_list:
-#               print(f'de {start_date.strftime("%d/%m/%y")} a {end_date.strftime("%d/%m/%y")}')
-                dates.loc[len(dates)]=[start_date.strftime("%d/%m/%y"),end_date.strftime("%d/%m/%y")]
+        for outbound_date in outer_days_list:
+            inner_days_list = [outbound_date + timedelta(days=d) for d in range(self._MAX_DAYS_OF_STAY + 1)]
+            for inbound_date in inner_days_list:
+#               print(f'de {outbound_date.strftime("%d/%m/%y")} a {inbound_date.strftime("%d/%m/%y")}')
+                dates.loc[len(dates)]=[outbound_date.strftime("%d/%m/%y"),inbound_date.strftime("%d/%m/%y")]
         return dates
 
 if __name__ == '__main__':
