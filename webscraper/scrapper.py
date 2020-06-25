@@ -7,7 +7,7 @@ from datetime import date, timedelta
 import os
 from pyvirtualdisplay import Display
 
-from webscraper. result_parser import ed_01
+from webscraper.result_parser import ed_01
 
 class Scrapper():
 
@@ -32,7 +32,7 @@ class Scrapper():
         # la_URL = "https://www.edreams.es/travel/#results/type=R;dep=2020-08-15;from=MAD;to=LCG;ret=2020-08-15;collectionmethod=false;airlinescodes=false;internalSearch=true"
         # la_URL = "https://www.edreams.es/travel/#results/type=O;dep=2020-08-15;from=MAD;to=LCG;internalSearch=true"
         la_URL = f"https://www.edreams.es/travel/#results/type=O;dep={flight_date};from={origin};to={destination};internalSearch=true"
-        print(la_URL)
+        # print(la_URL)
         driver.delete_all_cookies()
         driver.get(la_URL)
         sleep(5.5)  # Time in seconds
@@ -45,7 +45,8 @@ class Scrapper():
         #
         parser = ed_01()
         df = parser.parse(page_source)
-        print(df)        
+        # print(df) 
+        return df       
 
 if __name__ == "__main__":
     scrapper = Scrapper()

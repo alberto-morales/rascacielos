@@ -1,3 +1,7 @@
 planner:
-  number_of_days: 5
+  number_of_days: 1
   max_days_of_stay: 9
+
+persistence:
+  bootstrap_servers: certik:9092
+  schema_registry_url: http://certik:8081
