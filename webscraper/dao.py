@@ -71,7 +71,7 @@ class FlightDAO():
         print(destination)
         print(extraction_date)
         print(flight_date)
-        topic_name = origin + '-' + destination + '-htm'
+        topic_name = origin + '-' + destination + '-json'
         key = {
                 "extraction_date": extraction_date,
                 "flight_date": flight_date
