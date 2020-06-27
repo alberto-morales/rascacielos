@@ -35,8 +35,9 @@ class Processor():
         scrapper = Scrapper()
         dao = FlightDAO()
         for index, row in df_fechas.iterrows():
-            #print(row['extraction_date'])
-            #print(row['flight_date'])
+            print('iterrows:')
+            print(f"Extraction date: {row['extraction_date']}")
+            print(f"Flight date: {row['flight_date']}")
             df = scrapper.extract(self._origin,
                                   self._destination,
                                   row['extraction_date'],
@@ -50,6 +51,6 @@ class Processor():
                        )
 
 if __name__ == "__main__":
-    processor = Processor({'origin': 'MAD', 'destination': 'SLV'}, Planner())
+    processor = Processor({'origin': 'MAD', 'destination': 'LCG'}, Planner())
     processor.play()
               
