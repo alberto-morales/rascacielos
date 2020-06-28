@@ -43,10 +43,14 @@ class Scrapper():
         # f.write(page_source)
         # f.close()
         #
+        df = None
         parser = ed_01()
-        df = parser.parse(page_source)
-        print(df) 
-        return df       
+        try:
+            df = parser.parse(page_source)
+        except expression as identifier:
+            pass            
+        print(f'df es {df}') 
+        return page_source, df       
 
 if __name__ == "__main__":
     scrapper = Scrapper()

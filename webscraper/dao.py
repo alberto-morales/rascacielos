@@ -3,8 +3,13 @@ import yaml
 import pandas as pd
 from datetime import date, timedelta
 
+from time import sleep
+from datetime import datetime
+from kafka import KafkaProducer
+
 from confluent_kafka import avro as avro
 from confluent_kafka.avro import AvroProducer
+
 
 key_schema_str = """
 {
@@ -126,11 +131,18 @@ def create_test_df():
     df = df.join(df_destination_airport)    
     return df
 
+def date_time():
+    now = datetime.now()  # current date and time
+    date_time = now.strftime("%Y-%m-%d,%H:%M:%S")
+    print("date and time:", date_time)
+    return date_time
+    
 class FlightDAO():
-    def __init__(self, params=None):
+    def __init__(self):
         """The following configuration elements are required:
 
-            planner.number_of_days
+            persistence.bootstrap_servers
+            persistence.schema_registry_url
         """
         with open(os.path.dirname(os.path.abspath(__file__)) + '/webscrapper.yaml') as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
@@ -138,7 +150,7 @@ class FlightDAO():
             self._SCHEMA_REGISTRY_URL = config['persistence']['schema_registry_url']
         value_schema = avro.loads(value_schema_str)
         key_schema = avro.loads(key_schema_str)
-        self._avroProducer = AvroProducer({
+        self._producer = AvroProducer({
             'bootstrap.servers': self._BOOTSTRAP_SERVERS,
             'on_delivery': delivery_report,
             'schema.registry.url': self._SCHEMA_REGISTRY_URL
@@ -152,6 +164,8 @@ class FlightDAO():
         print(extraction_date)
         print(flight_date)
         topic_name = origin + '-' + destination + '-json'
+        #
+        extraction_date = date_time()
         #
         for i in range(len(df)) : 
           price = df.loc[i, 'price']
@@ -175,11 +189,49 @@ class FlightDAO():
                       "origin_airport": origin_airport,
                       "destination_airport": destination_airport
                   }      
-          self._avroProducer.produce(topic=topic_name, key=key, value=value)
-          self._avroProducer.flush()     
+          #
+          self._producer.produce(topic=topic_name, key=key, value=value)
+          self._producer.flush(timeout=5)  #5seg   
+
+
+class RawDAO():
+    def __init__(self):
+        """The following configuration elements are required:
+
+            planner.number_of_days
+        """
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/webscrapper.yaml') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            self._BOOTSTRAP_SERVERS   = config['persistence']['bootstrap_servers']
+        self._producer = KafkaProducer(bootstrap_servers=self._BOOTSTRAP_SERVERS)         
+
+
+    def persist(self, page_source, origin, destination, extraction_date, flight_date):
+        print(f"page_source.len() es '{page_source.__len__()}'")
+        print(origin)
+        print(destination)
+        print(extraction_date)
+        print(flight_date)
+        topic_name = origin + '-' + destination + '-htm'
+        #
+        topic = origin + '-' + destination + '-htm'
+        key = {
+                "flight_date": flight_date,
+                "extraction_date_time": date_time()
+              }        
+        key = bytearray(key, 'utf8')
+        value = bytearray(page_source, 'utf8')
+        #
+        self._producer.send(topic, key=key, value=value)
+        self._producer.flush(timeout=5)  #5seg
 
 
 if __name__ == "__main__":   
-    df = create_test_df()
-    dao = FlightDAO()
-    dao.persist(df, 'MAD', 'LCG', date.today().strftime("%Y-%m-%d"), (date.today() + timedelta(days=20)).strftime("%Y-%m-%d"))      
+    #
+    # df = create_test_df()
+    # dao = FlightDAO()
+    # dao.persist(df, 'MAD', 'LCG', date.today().strftime("%Y-%m-%d"), (date.today() + timedelta(days=20)).strftime("%Y-%m-%d"))      
+    #
+    dao = RawDAO()
+    dao.persist('<html><body>test</body></html>', 'MAD', 'LCG', date.today().strftime("%Y-%m-%d"), (date.today() + timedelta(days=20)).strftime("%Y-%m-%d"))      
+    #
