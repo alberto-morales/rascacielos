@@ -10,11 +10,13 @@ from kafka import KafkaProducer
 from confluent_kafka import avro as avro
 from confluent_kafka.avro import AvroProducer
 
+from confluent_kafka.serialization import StringSerializer
+
 
 key_schema_str = """
 {
    "namespace": "eu.albertomorales.tfm",
-   "name": "value",
+   "name": "key",
    "type": "record",
    "fields" : [
      {
@@ -28,7 +30,7 @@ key_schema_str = """
 value_schema_str = """
 {
    "namespace": "eu.albertomorales.tfm",
-   "name": "key",
+   "name": "value",
    "type": "record",
    "fields" : [
      {
@@ -155,7 +157,7 @@ class FlightDAO():
             'on_delivery': delivery_report,
             'schema.registry.url': self._SCHEMA_REGISTRY_URL
             }, default_key_schema=key_schema, default_value_schema=value_schema)        
-
+        print('FlightDAO initiated')
 
     def persist(self, df, origin, destination, extraction_date, flight_date):
         print(df)
@@ -203,7 +205,8 @@ class RawDAO():
         with open(os.path.dirname(os.path.abspath(__file__)) + '/webscrapper.yaml') as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
             self._BOOTSTRAP_SERVERS   = config['persistence']['bootstrap_servers']
-        self._producer = KafkaProducer(bootstrap_servers=self._BOOTSTRAP_SERVERS)         
+        self._producer = KafkaProducer(bootstrap_servers=self._BOOTSTRAP_SERVERS)     
+        print('RawDAO initiated')    
 
 
     def persist(self, page_source, origin, destination, extraction_date, flight_date):
@@ -215,10 +218,7 @@ class RawDAO():
         topic_name = origin + '-' + destination + '-htm'
         #
         topic = origin + '-' + destination + '-htm'
-        key = {
-                "flight_date": flight_date,
-                "extraction_date_time": date_time()
-              }        
+        key = flight_date + ',' + date_time()
         key = bytearray(key, 'utf8')
         value = bytearray(page_source, 'utf8')
         #
