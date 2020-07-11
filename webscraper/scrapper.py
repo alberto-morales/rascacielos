@@ -14,8 +14,7 @@ class Scrapper():
     def __init__(self):
         pass 
 
-    def extract(self, origin, destination, extraction_date, flight_date):
-        print(extraction_date)        
+    def extract(self, origin, destination, flight_date):
         print(flight_date)
         print(origin)
         print(destination)

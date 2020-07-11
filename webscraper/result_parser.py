@@ -5,7 +5,7 @@ class ResultParser:
     def __init__(self):
         pass
 
-    def parse(selfSelf, page_source):
+    def parse(self, page_source):
         pass
 
 class ed_01(ResultParser):
@@ -13,7 +13,7 @@ class ed_01(ResultParser):
     def __init__(self):
         pass
 
-    def parse(selfSelf, page_source):
+    def parse(self, page_source):
         res_price = []
         res_flight_number = []
         res_airline = []
@@ -115,8 +115,8 @@ class ed_01(ResultParser):
         res_price = { 'price': res_price}
         res_flight_number = { 'flight_number': res_flight_number}
         res_airline = { 'airline': res_airline}
-        res_departure_time = { 'departure_time': departure_time}
-        res_arrival_time = { 'arrival_time': arrival_time}
+        res_departure_time = { 'departure_time': res_departure_time}
+        res_arrival_time = { 'arrival_time': res_arrival_time}
         res_origin_airport = { 'origin_airport': res_origin_airport}
         res_destination_airport = { 'destination_airport': res_destination_airport}
         df_price = pd.DataFrame(res_price, index = res_index)

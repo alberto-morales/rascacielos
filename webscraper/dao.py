@@ -4,7 +4,6 @@ import pandas as pd
 from datetime import date, timedelta
 
 from time import sleep
-from datetime import datetime
 from kafka import KafkaProducer
 
 from confluent_kafka import avro as avro
@@ -133,11 +132,6 @@ def create_test_df():
     df = df.join(df_destination_airport)    
     return df
 
-def date_time():
-    now = datetime.now()  # current date and time
-    date_time = now.strftime("%Y-%m-%d,%H:%M:%S")
-    print("date and time:", date_time)
-    return date_time
     
 class FlightDAO():
     def __init__(self):
@@ -159,30 +153,29 @@ class FlightDAO():
             }, default_key_schema=key_schema, default_value_schema=value_schema)        
         print('FlightDAO initiated')
 
-    def persist(self, df, origin, destination, extraction_date, flight_date):
+    def persist(self, df, origin, destination, extraction_date_time, flight_date):
         print(df)
         print(origin)
         print(destination)
-        print(extraction_date)
+        print(extraction_date_time)
         print(flight_date)
         topic_name = origin + '-' + destination + '-json'
         #
-        extraction_date = date_time()
-        #
         for i in range(len(df)) : 
-          price = df.loc[i, 'price']
-          flight_number = df.loc[i, 'flight_number']
-          airline = df.loc[i, 'airline']
-          departure_time = df.loc[i, 'departure_time']
-          arrival_time = df.loc[i, 'arrival_time']
-          origin_airport = df.loc[i, 'origin_airport']
-          destination_airport = df.loc[i, 'destination_airport']         
+          index = i + 1
+          price = df.loc[index, 'price']
+          flight_number = df.loc[index, 'flight_number']
+          airline = df.loc[index, 'airline']
+          departure_time = df.loc[index, 'departure_time']
+          arrival_time = df.loc[index, 'arrival_time']
+          origin_airport = df.loc[index, 'origin_airport']
+          destination_airport = df.loc[index, 'destination_airport']         
           #
           key = {
                   "flight_date": flight_date
                 }
           value = {
-                      "extraction_date": extraction_date,
+                      "extraction_date": extraction_date_time,
                       "price": price,
                       "flight_number": flight_number,
                       "airline": airline,
@@ -209,20 +202,19 @@ class RawDAO():
         print('RawDAO initiated')    
 
 
-    def persist(self, page_source, origin, destination, extraction_date, flight_date):
+    def persist(self, page_source, origin, destination, extraction_date_time, flight_date):
         print(f"page_source.len() es '{page_source.__len__()}'")
         print(origin)
         print(destination)
-        print(extraction_date)
+        print(extraction_date_time)
         print(flight_date)
         topic_name = origin + '-' + destination + '-htm'
         #
-        topic = origin + '-' + destination + '-htm'
-        key = flight_date + ',' + date_time()
+        key = flight_date + ',' + extraction_date_time
         key = bytearray(key, 'utf8')
         value = bytearray(page_source, 'utf8')
         #
-        self._producer.send(topic, key=key, value=value)
+        self._producer.send(topic=topic_name, key=key, value=value)
         self._producer.flush(timeout=5)  #5seg
 
 

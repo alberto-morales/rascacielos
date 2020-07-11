@@ -1,6 +1,6 @@
 import yaml
 import os 
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 from task_creator_one_way import Planner
 from scrapper import Scrapper
@@ -8,6 +8,12 @@ from dao import RawDAO, FlightDAO
 
 from pandas import DataFrame
 
+def date_time():
+    now = datetime.now()  # current date and time
+    date_time = now.strftime("%Y-%m-%d,%H:%M:%S")
+    print("date and time:", date_time)
+    return date_time
+    
 class Processor():
 
     def __init__(self, params, planner : Planner):
@@ -38,22 +44,23 @@ class Processor():
         # print(df_fechas)
         scrapper = Scrapper()
         for index, row in df_fechas.iterrows():
+            planner_extraction_date = row['extraction_date']
             print('iterrows:')
-            print(f"Extraction date: {row['extraction_date']}")
+            print(f"Planner extraction date: {planner_extraction_date}")
             flight_date = row['flight_date']
             flight_date = (date.today() + timedelta(days=20)).strftime("%Y-%m-%d") # esto para debug solo
             print(f"Flight date: {flight_date}")
             page_source, df = scrapper.extract(self._origin,  
                                                self._destination,
-                                               row['extraction_date'],
                                                flight_date
                                               )
+            extraction_date_time = date_time()                                              
             if self._persistence_format == 'raw':
                 dao = RawDAO()
                 dao.persist(page_source, 
                             self._origin,
                             self._destination,
-                            row['extraction_date'],
+                            extraction_date_time,
                             flight_date
                            )
             else:
@@ -63,7 +70,7 @@ class Processor():
                 dao.persist(df, 
                             self._origin,
                             self._destination,
-                            row['extraction_date'],
+                            extraction_date_time,
                             flight_date
                            )
 
