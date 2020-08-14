@@ -13,6 +13,7 @@ class Planner():
         with open(os.path.dirname(os.path.abspath(__file__)) + '/webscrapper.yaml') as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
             self._NUMBER_OF_DAYS = config['planner']['number_of_days']
+            print(f'NUMBER_OF_DAYS initialized with {self._NUMBER_OF_DAYS}')
 
 
     def create_tasks(self):

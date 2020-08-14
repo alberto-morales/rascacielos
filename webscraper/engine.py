@@ -39,6 +39,7 @@ class Processor():
         #
         # gets the dates dataframe
         df_fechas = self._planner.create_tasks()
+        # print(df_fechas)        
         # and shuffles it
         df_fechas = df_fechas.sample(frac=1).reset_index(drop=True)
         # print(df_fechas)
@@ -48,7 +49,7 @@ class Processor():
             print('iterrows:')
             print(f"Planner extraction date: {planner_extraction_date}")
             flight_date = row['flight_date']
-            flight_date = (date.today() + timedelta(days=20)).strftime("%Y-%m-%d") # esto para debug solo
+            # flight_date = (date.today() + timedelta(days=20)).strftime("%Y-%m-%d") # esto para debug solo
             print(f"Flight date: {flight_date}")
             page_source, df = scrapper.extract(self._origin,  
                                                self._destination,
