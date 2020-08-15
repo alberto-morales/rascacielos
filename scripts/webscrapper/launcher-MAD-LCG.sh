@@ -1,2 +1,2 @@
 #!/bin/bash
-python3 webscraper/launcher.py -o MAD -d LCG
+python3 ../../webscraper/launcher.py -o MAD -d LCG
