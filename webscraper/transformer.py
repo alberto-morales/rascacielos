@@ -17,14 +17,17 @@ if __name__ == '__main__':
     origin = 'MAD'
     destination = 'LCG'
     parser = ed_01()
-    #    
-    parsed_records = []
-    origin_topic_name = origin + '-' + destination + '-htm'    
     #
     bootstrap_servers = None
+    topic_name_prefix = None
     with open(os.path.dirname(os.path.abspath(__file__)) + '/webscrapper.yaml') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
         bootstrap_servers = config['persistence']['bootstrap_servers']    
+        topic_name_prefix = config['persistence']['topic_name_prefix']  
+    #    
+    parsed_records = []
+    origin_topic_name = topic_name_prefix + origin + '-' + destination + '-htm'    
+    #
 
     consumer = KafkaConsumer(origin_topic_name, auto_offset_reset='earliest',
                              bootstrap_servers=bootstrap_servers, consumer_timeout_ms=1000)

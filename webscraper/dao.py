@@ -144,6 +144,7 @@ class FlightDAO():
             config = yaml.load(f, Loader=yaml.FullLoader)
             self._BOOTSTRAP_SERVERS   = config['persistence']['bootstrap_servers']
             self._SCHEMA_REGISTRY_URL = config['persistence']['schema_registry_url']
+            self._TOPIC_NAME_PREFIX   = config['persistence']['topic_name_prefix']            
         value_schema = avro.loads(value_schema_str)
         key_schema = avro.loads(key_schema_str)
         self._producer = AvroProducer({
@@ -159,7 +160,7 @@ class FlightDAO():
         print(destination)
         print(extraction_date_time)
         print(flight_date)
-        topic_name = origin + '-' + destination + '-json'
+        topic_name = self._TOPIC_NAME_PREFIX + origin + '-' + destination + '-json'
         #
         for i in range(len(df)) : 
           index = i + 1
@@ -198,6 +199,7 @@ class RawDAO():
         with open(os.path.dirname(os.path.abspath(__file__)) + '/webscrapper.yaml') as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
             self._BOOTSTRAP_SERVERS   = config['persistence']['bootstrap_servers']
+            self._TOPIC_NAME_PREFIX   = config['persistence']['topic_name_prefix']
         self._producer = KafkaProducer(bootstrap_servers=self._BOOTSTRAP_SERVERS)     
         print('RawDAO initiated')    
 
@@ -208,7 +210,7 @@ class RawDAO():
         print(destination)
         print(extraction_date_time)
         print(flight_date)
-        topic_name = origin + '-' + destination + '-htm'
+        topic_name = self._TOPIC_NAME_PREFIX + origin + '-' + destination + '-htm'
         #
         key = flight_date + ',' + extraction_date_time
         key = bytearray(key, 'utf8')
