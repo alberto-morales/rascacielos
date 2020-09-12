@@ -15,11 +15,11 @@ from confluent_kafka.serialization import StringSerializer
 key_schema_str = """
 {
    "namespace": "eu.albertomorales.tfm",
-   "name": "key",
+   "name": "flightkey",
    "type": "record",
    "fields" : [
      {
-       "name" : "flight_date",
+       "name" : "key",
        "type" : "string"
      }   
    ]
@@ -29,11 +29,15 @@ key_schema_str = """
 value_schema_str = """
 {
    "namespace": "eu.albertomorales.tfm",
-   "name": "value",
+   "name": "flightvalue",
    "type": "record",
    "fields" : [
      {
-       "name" : "extraction_date",
+       "name" : "flight_date",
+       "type" : "string"
+     },     
+     {
+       "name" : "extraction_date_time",
        "type" : "string"
      },     
      {
@@ -172,11 +176,13 @@ class FlightDAO():
           origin_airport = df.loc[index, 'origin_airport']
           destination_airport = df.loc[index, 'destination_airport']         
           #
+          key_str = flight_date + ',' + extraction_date_time
           key = {
-                  "flight_date": flight_date
+                  "key": key_str
                 }
           value = {
-                      "extraction_date": extraction_date_time,
+                      "flight_date": flight_date,
+                      "extraction_date_time": extraction_date_time,
                       "price": price,
                       "flight_number": flight_number,
                       "airline": airline,
