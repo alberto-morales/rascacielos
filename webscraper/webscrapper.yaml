@@ -3,7 +3,7 @@ planner:
   max_days_of_stay: 9
 
 persistence:
-  format: raw
-  bootstrap_servers: certik:9092
-  schema_registry_url: http://certik:8081
-  topic_name_prefix: test-
+  format: avro
+  bootstrap_servers: bus:9092
+  schema_registry_url: http://bus:8081
+  topic_name_prefix: lab-
