@@ -1,7 +1,7 @@
 import sys, getopt
 
-from engine import Processor
-from task_creator_one_way import Planner
+from webscraper.engine import Processor
+from webscraper.task_creator_one_way import Planner
 
 def main(argv):
    origin = None

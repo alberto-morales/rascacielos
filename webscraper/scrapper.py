@@ -53,4 +53,4 @@ class Scrapper():
 
 if __name__ == "__main__":
     scrapper = Scrapper()
-    scrapper.extract('MAD', 'LCG', date.today().strftime("%Y-%m-%d"), (date.today() + timedelta(days=20)).strftime("%Y-%m-%d"))        
+    scrapper.extract('MAD', 'LCG', (date.today() + timedelta(days=1)).strftime("%Y-%m-%d"))        

@@ -2,9 +2,9 @@ import yaml
 import os 
 from datetime import date, timedelta, datetime
 
-from task_creator_one_way import Planner
-from scrapper import Scrapper
-from dao import RawDAO, FlightDAO
+from webscraper.task_creator_one_way import Planner
+from webscraper.scrapper import Scrapper
+from webscraper.dao import RawDAO, FlightDAO
 
 from pandas import DataFrame
 

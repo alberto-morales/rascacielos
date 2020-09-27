@@ -6,7 +6,7 @@ import yaml
 
 from kafka import KafkaConsumer, KafkaProducer
 
-from dao import FlightDAO
+from webscraper.dao import FlightDAO
 from webscraper.result_parser import ed_01
 
 if __name__ == '__main__':
