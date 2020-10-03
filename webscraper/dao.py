@@ -200,12 +200,15 @@ class RawDAO():
     def __init__(self):
         """The following configuration elements are required:
 
-            planner.number_of_days
+            persistence.bootstrap_servers
+            persistence.topic_name_prefix
         """
         with open(os.path.dirname(os.path.abspath(__file__)) + '/webscrapper.yaml') as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
             self._BOOTSTRAP_SERVERS   = config['persistence']['bootstrap_servers']
+            print(f'_BOOTSTRAP_SERVERS initialized with {self._BOOTSTRAP_SERVERS}')
             self._TOPIC_NAME_PREFIX   = config['persistence']['topic_name_prefix']
+            print(f'_TOPIC_NAME_PREFIX initialized with {self._TOPIC_NAME_PREFIX}')
         self._producer = KafkaProducer(bootstrap_servers=self._BOOTSTRAP_SERVERS)     
         print('RawDAO initiated')    
 
