@@ -1,9 +1,9 @@
 planner:
-  number_of_days: 1
+  number_of_days: 6
   max_days_of_stay: 9
 
 persistence:
   format: avro
   bootstrap_servers: bus:9092
   schema_registry_url: http://bus:8081
-  topic_name_prefix: lab-
+  topic_name_prefix: test-
