@@ -4,19 +4,18 @@ import org.apache.spark.sql.functions.{col, datediff, substring, to_date, lit, e
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.functions._
 
-object Prueba2Backup  {
+object Processor  {
 
   def main (arg: Array[String]): Unit = {
-    println("ini - Prueba2")
+
     val conf = new SparkConf().setAppName("rascacielos").setMaster("local[2]")
     val sc = new SparkContext(conf)
     val ss = SparkSession.builder
       .master("local[2]")
       .appName("rascacielos")
-      //.config("spark.some.config.option", "some-value")
       .getOrCreate()
 
-    val csvRDD = sc.textFile("file:///home/alberto/workspace2/rascacielos/data/test_BCN_MAD_JSON.csv")
+    val csvRDD = sc.textFile("file:///home/alberto/workspace2/rascacielos/data/test_LCG_MAD_JSON.csv")
     print(csvRDD.count())
 
     val schema = StructType(Array(
@@ -41,7 +40,13 @@ object Prueba2Backup  {
     val filteredRDD = flightsRDD.filter(_.getString(4) != "Renfe")
       .filter(_.getString(6).indexOf("+") < 0)
 
+
     val toInt = udf[Int, String]( _.toInt)
+
+
+    val primerDF = ss.createDataFrame(filteredRDD, schema);
+    primerDF.printSchema();
+    println(primerDF.head())
 
     // Apply the schema to the RDD
     val flightsDF = ss.createDataFrame(filteredRDD, schema)
@@ -55,34 +60,37 @@ object Prueba2Backup  {
       .drop("departure_hour")
       .drop("arrival_hour")
 
+    flightsDF.printSchema()
     println(flightsDF.head())
 
     // Creates a temporary view using the DataFrame
-    flightsDF.createOrReplaceTempView("flights")
-    flightsDF.printSchema()
+    // flightsDF.createOrReplaceTempView("flights")
 
     val departedDF = flightsDF
       .filter(flightsDF("flight_date").lt(lit("2020-10-18")))
       .filter(flightsDF("duration").lt(4))
-    departedDF.createOrReplaceTempView("departed")
+    // departedDF.createOrReplaceTempView("departed")
 
-    // val minPrices = departedDF.groupBy("lag").min("price")
     val minPrices = departedDF.groupBy("flight_date").min("price")
+      .withColumnRenamed("flight_date", "fd")
       .withColumnRenamed("min(price)", "minPrice")
     minPrices.createOrReplaceTempView("minPrices")
 
-    // SQL can be run over a temporary view created using DataFrames
-    // val results = ss.sql("SELECT * FROM minPrices order by lag desc")
+    import ss.implicits._
+    val enlazados = departedDF.join(minPrices).where($"flight_date" === $"fd")
+      .drop("fd")
+    enlazados.printSchema()
+    println(enlazados.head())
 
-    val joined = ss.sql("SELECT departed.flight_date as flight_date, extraction_date_time, price, flight_number, airline, departure_time, arrival_time, "
-      + " origin_airport, destination_airport, extraction_date, lag, duration, minPrice from departed JOIN minPrices ON departed.flight_date = minPrices.flight_date")
-    joined.createOrReplaceTempView("joined")
+    // enlazados.write.format("csv").save("file:///home/alberto/workspace2/rascacielos/data/test_BCN_MAD_processed.csv")
 
-    val results = ss.sql("SELECT flight_date, lag, min(price) as price, minPrice from joined group by flight_date, minPrice, lag order by flight_date desc, lag desc")
-    results.printSchema()
-    results.collect().take(300).foreach(println)
-//.withColumnRenamed("SUM(money)", "money")
-    println("fin - Prueba2")
+    enlazados.coalesce(1)
+      .write
+      .option("header","true")
+      .option("sep",",")
+      .mode("overwrite")
+      .csv("file:///home/alberto/workspace2/rascacielos/data/test_LCG_MAD_processed_x.csv")
+
   }
 
 }
