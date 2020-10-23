@@ -9,12 +9,11 @@ import matplotlib.pyplot as plt
 
 BASE_OUTPUT_PATH = os.path.dirname(os.path.abspath(__file__)) + "/../models"
 DATA_FILE_PATH = os.path.dirname(os.path.abspath(__file__)) + "/../data/test_BCN_MAD_processed.csv"
-MODEL_NAME = "BCN_MAD.bin"
+MODEL_NAME = "BCN-MAD.bin"
 
 def train_model(data, hyperparams):
     model = sm.OLS(data["train"]["y"], data["train"]["X"]).fit()
     preds = model.predict(data["test"]["X"])
-    print(f"R2 {model.rsquared}  R-squared (uncentered)")
     print(str(model.summary()))
     return model
 
@@ -25,13 +24,11 @@ def main():
 
     # Get the dataframe 
     df = pd.read_csv(DATA_FILE_PATH) 
-    muestra = df[["price", "lag", "minPrice"]]
-    print(muestra.head)
     if (df is not None):
         X = df[["price", "lag"]]  # Feature Matrix
         y = df["minPrice"]  # Target Variable
     else:
-        e = ("No dataset provided")
+        e = ("No dataframe provided")
         print(e)
         raise Exception(e)
 
@@ -39,11 +36,6 @@ def main():
         X, y, test_size=0.2, random_state=0)
     data = {"train": {"X": X_train, "y": y_train},
             "test": {"X": X_test, "y": y_test}}
-
-    print(X_train.shape)
-    print(y_train.shape)
-    print(X_test.shape)
-    print(y_test.shape)
 
     model = train_model(data, hyperparams)
 
