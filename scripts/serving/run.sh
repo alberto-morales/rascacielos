@@ -1,0 +1,1 @@
+docker run --publish 8080:8080 --detach --name rascacielos rascacielos:0.9.1
